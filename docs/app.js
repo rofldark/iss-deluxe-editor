@@ -1,4 +1,4 @@
-/* ISS Deluxe Text Studio - user interface. All work happens locally in this page. */
+/* ISS Deluxe Editor - user interface. All work happens locally in this page. */
 (() => {
   "use strict";
   const K = window.ISSD;

@@ -1,63 +1,120 @@
 <div align="center">
 
-<img src="docs/img/title.png" alt="International Superstar Soccer Deluxe" width="420">
+<img src="docs/img/title.png" alt="International Superstar Soccer Deluxe Editor" width="520">
 
-# ISS Deluxe Text Studio
+# ISS Deluxe Editor
 
-**SNES Name- und Text-Editor für *International Superstar Soccer Deluxe* (Super Nintendo):
-Spielernamen, Menü- und Fließtexte ändern, als ROM oder `.bps`/`.ips`-Patch speichern.**
+**Change player names and in-game texts of the SNES classic *International Superstar Soccer Deluxe* –
+in your browser or on the command line, and share your changes as a patch.**
 
-[Web-App](#web-app-ohne-installation) · [Kommandozeile](#nutzung) · [Einschränkungen](#bekannte-einschränkungen)
+![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
+![Dependencies](https://img.shields.io/badge/dependencies-none-success)
+![Platform](https://img.shields.io/badge/ROM-SNES%20LoROM-8A2BE2)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+[Deutsch](README.de.md) · [Web app](#-web-app-no-install) · [Quick start](#-quick-start) · [Known limits](#-known-limits)
 
 </div>
 
-Werkzeug zum Auslesen, Ändern und Einsetzen der Texte und Spielernamen von
-**International Superstar Soccer Deluxe (Europe)** (ISS Deluxe, SNES, 2 MB, LoROM). Aufbau und Bedienung
-entsprechen dem Schwesterprojekt `KickOff3-Texte`.
+---
 
-## Web-App (ohne Installation)
-`docs/index.html` im Browser öffnen (oder die Veröffentlichung über GitHub Pages nutzen), die eigene ROM hineinziehen,
-Namen und Texte bearbeiten und die geänderte ROM oder einen `.bps`/`.ips`-Patch herunterladen. Die ROM verlässt den
-Browser nie (die Seite darf keine Netzwerkanfragen stellen). Web-App und Python-Tool erzeugen byte-identische ROMs.
+## 🌐 Web app (no install)
 
-## Voraussetzungen (Kommandozeile)
-- Python 3.9 oder neuer, keine weiteren Pakete
-- Die eigene ROM `International Superstar Soccer Deluxe (Europe).sfc`
-  (CRC32 `CBA724BA`; mit `info` prüfen). Es gehört **keine** ROM zum Projekt.
+Prefer clicking over typing commands? Open the **web editor** in your browser, drop in your ROM,
+edit names and texts and download the changed ROM (or a patch):
 
-## Nutzung
+**https://rofldark.github.io/iss-deluxe-editor/**
+
+- 🔒 **Your ROM never leaves your browser.** There is no server: the page is plain HTML + JavaScript and
+  is not even allowed to make network requests (its Content-Security-Policy says `connect-src 'none'`).
+- ✏️ Edit player names (36 teams × 20 players), menu texts and the running texts (help pages, training and
+  scenario descriptions) with live length checks, search and an "only changed" filter.
+- 💾 Save the changed ROM, a `.bps` / `.ips` patch, or your edits as a small JSON file. Edits are also
+  remembered in your browser between visits (only the texts, never the ROM).
+- 🇩🇪 / 🇬🇧 Interface in German and English.
+
+The web app and the command line tool produce **byte-identical** ROMs (checked by the tests).
+You can also run the web app locally: open `docs/index.html` in a browser.
+
+> The page is published with GitHub Pages from the `docs/` folder.
+
+## ✨ Features
+
+- 📤 **Dump** player names, menu texts and running texts into plain text files
+- ✏️ **Edit** them in any editor, one line per text, with the allowed length shown
+- 📥 **Insert** them back into a *copy* of your ROM (the original is never touched)
+- 🩹 **Patch maker**: create `.bps` / `.ips` patches to share your changes **without sharing the ROM**
+- ✅ **Safe**: strict length and character checks, nothing is written on errors, the SNES checksum is fixed automatically
+- 🧪 Unit tests, no dependencies – just Python
+
+## 🚀 Quick start
+
+You need **Python 3.9+** and **your own ROM**: *International Superstar Soccer Deluxe (Europe)*
+(2 MB, CRC32 `CBA724BA`). This repository does **not** contain any ROM. Please don't ask for one.
+
 ```bash
-python issd_text.py info   "ROM.sfc"                       # richtige ROM?
-python issd_text.py dump   "ROM.sfc" texte                 # Texte nach texte/ auslesen
-#   texte/2_player_names.txt und texte/1_texts.txt bearbeiten
-python issd_text.py verify "ROM.sfc" texte                 # prüfen, schreibt nichts
-python issd_text.py insert "ROM.sfc" texte build/neu.sfc   # in eine KOPIE einsetzen
-python issd_text.py patch  "ROM.sfc" build/neu.sfc build/neu.bps   # Patch zum Weitergeben
-python issd_text.py apply  "ROM.sfc" build/neu.bps ziel.sfc        # Patch anwenden
+# 0. Is it the right ROM?
+python issd_text.py info   "ISS Deluxe.sfc"
+
+# 1. Dump all texts into ./texte
+python issd_text.py dump   "ISS Deluxe.sfc" texte
+
+# 2. Edit texte/2_player_names.txt, texte/1_texts.txt, texte/3_prose.txt
+
+# 3. Dry run - only checks that everything fits
+python issd_text.py verify "ISS Deluxe.sfc" texte
+
+# 4. Write the changed ROM (a copy!)
+python issd_text.py insert "ISS Deluxe.sfc" texte "ISS Deluxe - fixed.sfc"
+
+# 5. Optional: make a shareable patch
+python issd_text.py patch  "ISS Deluxe.sfc" "ISS Deluxe - fixed.sfc" my-changes.bps
 ```
 
-Das Original wird nie verändert; die SNES-Prüfsumme wird automatisch korrigiert.
+Patches can be applied by anyone with their own ROM – with this tool
+(`python issd_text.py apply ROM my-changes.bps OUT.sfc`) or any BPS/IPS patcher
+such as *Floating IPS* or *RomPatcher.js* (in the browser).
 
-## Dateiformat
-Eine Zeile pro Text: `offset  max=N |text|`. Nur den Text zwischen den senkrechten Strichen ändern.
+## 📝 The text files
 
-- **Spielernamen** (`2_player_names.txt`): 36 Teams × 20 Spieler, höchstens 8 Zeichen; kürzere Namen
-  werden mit Leerzeichen aufgefüllt. Die Teamnamen in den Kommentaren sind aus den Namen erraten.
-- **Fließtexte** (`3_prose.txt`): Steuerungs-Hilfeseiten, Trainings- und Szenario-Beschreibungen in der kleinen Schrift,
-  eine Zeile pro Eintrag (das Spiel zeigt 4–6 Zeilen auf einmal). Die Länge jeder Zeile muss **exakt** gleich bleiben;
-  Sätze gehen in der nächsten Zeile weiter. Erlaubt: Buchstaben, Ziffern und `. , - ' /`.
-- **Texte** (`1_texts.txt`): Menü- und Meldungstexte mit fester Breite. Die Länge muss **exakt**
-  gleich bleiben (Leerzeichen mitzählen), weil die Texte ohne Trenner aneinanderliegen.
-- Erlaubte Zeichen: Buchstaben (ohne Umlaute), Ziffern, `. ! ? ' - :` und Leerzeichen.
-  Andere Bytes als `\xNN`.
+Each line looks like this: `offset  max=N |text|`. Change only the text between the bars.
 
-## Bekannte Einschränkungen
-- Teamnamen im Auswahlmenü und viele Menüs sind Grafik und lassen sich nicht über Text ändern.
-- Umlaute sind (noch) nicht ermittelt.
-- Der Test im Emulator steht noch aus.
+| File | Content | Rule |
+|---|---|---|
+| `2_player_names.txt` | 720 player names (36 teams × 20) | at most 8 characters, padded with spaces automatically |
+| `1_texts.txt` | menu and message texts | length must stay **exactly** the same (count the spaces) |
+| `3_prose.txt` | running texts in the small font: controller help pages, training and scenario descriptions, one line per entry | length of every line must stay **exactly** the same; sentences may continue in the next line |
 
-## Tests
+- Allowed characters: letters (no umlauts), digits and `. ! ? ' - :` plus space (small font: `. , - ' /`).
+  Other bytes can be written as `\xNN`.
+- Neighbouring texts are stored without a separator, which is why the length cannot change.
+- A second `dump` into the same folder overwrites your edits – copy them away first.
+
+## ⚠️ Known limits
+
+- The team names in the selection menu and many menus are graphics and cannot be changed as text.
+- The team names in the dump comments are guessed from the player names.
+- Umlauts are not mapped yet.
+- Digits and punctuation of the small font are inferred, not verified with a glyph test.
+
+## 🧪 Tests
+
 ```bash
-ISSD_ROM="Pfad/zur/ROM.sfc" python -m unittest discover tests
-ISSD_ROM="Pfad/zur/ROM.sfc" node --test tests/core.test.js     # Web-Core gegen Python-Tool
+ISSD_ROM="ISS Deluxe.sfc" python -m unittest discover tests     # Python tool
+ISSD_ROM="ISS Deluxe.sfc" node --test tests/core.test.js        # web app core vs. Python tool
 ```
+
+(PowerShell: `$env:ISSD_ROM="ISS Deluxe.sfc"`.) The Node test builds the same changes with both
+implementations and requires the ROMs to be byte-identical.
+
+## ⚖️ Legal
+
+This project contains **only tools and documentation**, no ROM, no game text dumps and no
+copyrighted game data. You need your own legally obtained copy of the game.
+*International Superstar Soccer Deluxe* is a trademark/copyright of its respective owners;
+this is a fan project and not affiliated with them. The title image is original artwork inspired by the
+game's style, not a copy of it. Patches you create contain only the differences to the original ROM.
+
+## 📄 License
+
+[MIT](LICENSE) – for the tools and documentation in this repository.

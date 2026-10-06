@@ -1,5 +1,5 @@
 /*
- * ISSD Text Studio - core logic (no DOM access).
+ * ISS Deluxe Editor - core logic (no DOM access).
  * Works in the browser (global ISSD) and in Node (require). A direct port of
  * issd_text.py; tests/core.test.js checks both produce identical ROMs.
  */

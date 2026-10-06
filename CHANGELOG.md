@@ -6,10 +6,11 @@ Alle nennenswerten Änderungen an diesem Projekt. Format nach
 ## [Unreleased]
 
 ### Added
+- README auf Englisch (GitHub-Startseite) mit Link zur Web-App, deutsche Fassung als `README.de.md`; neues Titelbild (Logo „International Superstar Soccer Deluxe Editor“) in README und Web-App; Web-App heißt jetzt „ISS Deluxe Editor“
 - Fließtexte in der kleinen Schrift (zweite Zeichentabelle): 17 Steuerungs-Hilfeseiten, 9 Trainingstexte und
   12 Szenario-Beschreibungen, zeilenweise bearbeitbar (`3_prose.txt`, Reiter „Fließtexte“ in der Web-App), in Python-Tool,
   `docs/core.js` und Tests
-- Web-App „ISS Deluxe Text Studio“ in `docs/` (HTML/CSS/JS ohne Build, für GitHub Pages): ROM im Browser laden,
+- Web-App „ISS Deluxe Editor“ in `docs/` (HTML/CSS/JS ohne Build, für GitHub Pages): ROM im Browser laden,
   Spielernamen (nach Team) und Texte bearbeiten, korrigierte ROM bzw. `.bps`/`.ips` speichern, Änderungen als JSON
   sichern/laden, Autosave im Browser, Oberfläche Deutsch/Englisch. Die ROM verlässt den Browser nie.
 - `docs/core.js` als JavaScript-Port der Tool-Logik; `tests/core.test.js` vergleicht ihn byte-genau mit `issd_text.py`
